@@ -1,13 +1,13 @@
 // Run this with the hyperspace-simulator
-// hyperspace-simulator 12-querying-with-hyperbee-secondary-indexing.js
+// hyperspace-simulator index.js
 
 const { Client } = require('hyperspace');
 const Hyperbee = require('hyperbee');
 const lexint = require('lexicographic-integer');
 const { kvPairs: dictionaryPairs } = require('websters-english-dictionary');
 
-// Toggle this on-and-off to see how long a full scan takes.
-const TEST_FULL_SCAN = true;
+// Toggle this on-and-off to see different behaviors.
+const USE_CORRECT_ENCODING = true;
 
 start();
 
@@ -31,23 +31,28 @@ async function start() {
   await batch.flush();
   console.log('Finished creating dictionary database.');
 
-  console.log('Timing a full scan to find all entries with length 35...');
-  console.time('full-scan');
-  await fullScanQuery(db, 35);
-  console.timeEnd('full-scan');
-
   console.log('Building secondary index...');
   await generateSecondaryIndex(db);
   console.log('Built secondary index, running test queries...');
 
-  const queries = [
+  const unencodedQueries = [
     { gt: '35/', lt: '36/' },
-    { gte: '0/', lte: '20/' },
     { gt: '45/b', lt: '45/c' },
     { gt: '22/', lt: '23/', limit: 10 },
   ];
+  // This will return results with length 100, 101...
+  const badUnencodedQueries = [{ gte: '0/', lt: '21/' }];
 
-  for (const query of queries) {
+  // To avoid the above problem, we need to properly encode our query bounds.
+  const encodedQueries = [
+    { gte: lexint.pack(0, 'hex') + '/', lt: lexint.pack(21, 'hex') + '/' },
+  ];
+
+  // Set this to one of the three options above to test things out.
+  // Note: unencoded queries will not work correctly if you're using lexint.
+  const testQuery = encodedQueries;
+
+  for (const query of testQuery) {
     const resultSet = [];
     for await (const record of db.createReadStream(query)) {
       resultSet.push(record);
@@ -57,18 +62,13 @@ async function start() {
 }
 
 async function generateSecondaryIndex(db) {
-  const batch = db.batch();
+  const b = db.batch();
   for await (const record of db.createReadStream()) {
     const definitionLength = record.value.length;
-    await batch.put(definitionLength + '/' + record.key, record.value);
+    const prefix = USE_CORRECT_ENCODING
+      ? lexint.pack(definitionLength, 'hex')
+      : definitionLength;
+    await b.put(prefix + '/' + record.key, record.value);
   }
-  return batch.flush();
-}
-
-async function fullScanQuery(db, length) {
-  const matches = [];
-  for await (const record of db.createReadStream()) {
-    if (record.value.length === length) matches.push(record);
-  }
-  console.log(`Found ${matches.length} definitions with length ${length}`);
+  return b.flush();
 }
