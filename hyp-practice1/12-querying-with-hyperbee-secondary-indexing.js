@@ -51,7 +51,7 @@ async function start() {
     for await (const record of db.createReadStream(query)) {
       resultSet.push(record);
     }
-    console.log('query:', query, 'results:', resultSet);
+    console.log('query:', query, 'results:', Object.keys(resultSet).length);
   }
 }
 
