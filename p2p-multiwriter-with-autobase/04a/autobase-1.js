@@ -27,3 +27,18 @@ for await (const node of baseA.createCausalStream()) {
   //   console.log(node.value.toString());
   console.log(node.clock);
 }
+
+await baseA.append('A0: hello! anybody home?', []); // An empty array as a second argument means "empty clock"
+await baseB.append('B0: hello! first one here.', []);
+await baseA.append('A1: hmmm. guess not.', []);
+await baseB.append('B1: anybody home?', []);
+
+await baseA.append('A5: oops. gone again', []);
+await baseB.append('B8: hello?', []);
+
+// note that this append links the clocks of the previous ones
+await baseB.append("B7: looks like we're both online!");
+
+for await (const node of baseA.createCausalStream()) {
+  console.log(node.value.toString());
+}
