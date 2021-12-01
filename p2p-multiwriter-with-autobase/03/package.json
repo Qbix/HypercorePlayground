@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "dependencies": {
+    "corestore": "^6.0.1-alpha.6",
+    "hyperswarm": "next"
+  }
+}
