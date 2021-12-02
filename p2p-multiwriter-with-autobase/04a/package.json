@@ -1,10 +1,9 @@
 {
   "type": "module",
   "dependencies": {
-    "autobase": "^1.0.0-alpha.5",
-    "chalk": "^5.0.0",
-    "corestore": "^6.0.1-alpha.6",
-    "hypercore": "*",
-    "random-access-memory": "^4.0.0"
+    "corestore": "next",
+    "autobase": "latest",
+    "chalk": "^4.1.2",
+    "random-access-memory": "^3.1.2"
   }
 }
