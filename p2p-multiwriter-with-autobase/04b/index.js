@@ -6,7 +6,6 @@ import Autobase from 'autobase';
 // (1) The Simplest Possible Index
 console.log(chalk.green('\n(1) The Simplest Possible Index\n'));
 {
-  /*
   // Create two chat users, each with their own Hypercores.
   const store = new Corestore(ram);
   const userA = store.get({ name: 'userA' });
@@ -23,13 +22,12 @@ console.log(chalk.green('\n(1) The Simplest Possible Index\n'));
   await baseA.append('A1: likewise. fun exercise huh?');
   await baseB.append('B1: yep. great time.');
 
-  const indexCore = store.get({ name: 'index-core' });
-  const index = baseA.createRebasedIndex(indexCore);
-  await index.update();
+  const viewCore = store.get({ name: 'view-core' });
+  const view = baseA.linearize(viewCore);
+  await view.update();
 
-  // The block at index 0 is a header block, so we skip over that.
-  for (let i = 1; i < index.length; i++) {
-    const node = await index.get(i);
+  for (let i = 0; i < view.length; i++) {
+    const node = await view.get(i);
     console.log(node.value.toString());
   }
 
@@ -37,28 +35,26 @@ console.log(chalk.green('\n(1) The Simplest Possible Index\n'));
   await baseB.append('B2: ok nice chatting');
 
   // The index needs to be updated again in order to pull in the new changes.
-  await index.update();
+  await view.update();
 
-  console.log('\nStatus after the second update:', index.status);
-  */
+  console.log('\nStatus after the second update:', view.status);
 }
 
 // (2) The Simplest Index, but with Forks
 console.log(chalk.green('\n(2) The Simplest Index, but with Forks\n'));
 {
-  /*
   // Create two chat users, each with their own Hypercores.
   const store = new Corestore(ram);
   const userA = store.get({ name: 'userA' });
   const userB = store.get({ name: 'userB' });
-  const indexCore = store.get({ name: 'index-core' });
+  const viewCore = store.get({ name: 'view-core' });
 
   // Make two Autobases with those two users as inputs.
   const baseA = new Autobase([userA, userB], { input: userA });
   const baseB = new Autobase([userA, userB], { input: userB });
 
   // We can use either Autobase to create the index, so well just pick baseA
-  const index = baseA.createRebasedIndex(indexCore);
+  const view = baseA.linearize(viewCore);
 
   // Append chat messages and read them out again, manually specifying empty clocks.
   // This simulates two peers creating independent forks.
@@ -67,10 +63,10 @@ console.log(chalk.green('\n(2) The Simplest Index, but with Forks\n'));
   await baseA.append('A1: hmmm. guess not.', []);
   await baseB.append('B1: anybody home?', []);
 
-  await index.update();
+  await view.update();
   console.log(
     chalk.blue('Index status after the first two independent messages:'),
-    index.status
+    view.status
   );
 
   // Add 3 more independent messages to A.
@@ -78,10 +74,10 @@ console.log(chalk.green('\n(2) The Simplest Index, but with Forks\n'));
     await baseA.append(`A${2 + i}: trying again...`, []);
   }
 
-  await index.update();
+  await view.update();
   console.log(
     chalk.blue('Index status after A appends 3 more messages:'),
-    index.status
+    view.status
   );
 
   // Add 5 more independent messages to B. Does its fork move to the beginning or the end?
@@ -89,18 +85,16 @@ console.log(chalk.green('\n(2) The Simplest Index, but with Forks\n'));
     await baseB.append(`B${2 + i}: also trying again...`, []);
   }
 
-  await index.update();
+  await view.update();
   console.log(
     chalk.blue('Index status after B appends 5 more messages:'),
-    index.status
+    view.status
   );
-  */
 }
 
 // (3) A Mapping Indexer
 console.log(chalk.green('\n(3) A Mapping Indexer\n'));
 {
-  /*
   // Create two chat users, each with their own Hypercores.
   const store = new Corestore(ram);
   const userA = store.get({ name: 'userA' });
@@ -117,32 +111,32 @@ console.log(chalk.green('\n(3) A Mapping Indexer\n'));
   await baseA.append('A1: likewise. fun exercise huh?');
   await baseB.append('B1: yep. great time.');
 
-  const indexCore = store.get({ name: 'index-core' });
-  const index = baseA.createRebasedIndex(indexCore, {
+  const viewCore = store.get({ name: 'view-core' });
+  const view = baseA.linearize(viewCore, {
     async apply(batch) {
       batch = batch.map(({ value }) =>
         Buffer.from(value.toString().toUpperCase())
       );
-      await index.append(batch);
+      await view.append(batch);
     },
   });
-  await index.update();
+  await view.update();
 
   // All the indexed nodes will be uppercased now.
-  for (let i = 1; i < index.length; i++) {
-    const node = await index.get(i);
+  for (let i = 0; i < view.length; i++) {
+    const node = await view.get(i);
     console.log(node.value.toString());
   }
 
   // Make another index that is stateful, and records the total message count alongside the message text.
-  const secondIndexCore = store.get({ name: 'second-index-core' });
-  const secondIndex = baseA.createRebasedIndex(secondIndexCore, {
+  const secondViewCore = store.get({ name: 'second-view-core' });
+  const secondView = baseA.linearize(secondViewCore, {
     async apply(batch) {
       let count = 0;
 
-      // First, we need to get the latest count from the last node in the index.
-      if (secondIndex.length > 1) {
-        const lastNode = await secondIndex.get(secondIndex.length - 1);
+      // First, we need to get the latest count from the last node in the view.
+      if (secondView.length > 0) {
+        const lastNode = await secondView.get(secondView.length - 1);
         const lastRecord = JSON.parse(lastNode.value.toString());
         count = lastRecord.count;
       }
@@ -157,25 +151,23 @@ console.log(chalk.green('\n(3) A Mapping Indexer\n'));
       });
 
       // Finally, append it just like before.
-      await secondIndex.append(batch);
+      await secondView.append(batch);
     },
   });
 
   // Pull all the changes into the new, stateful index.
-  await secondIndex.update();
+  await secondView.update();
 
   console.log(chalk.blue('\nStateful indexing results:\n'));
-  for (let i = 1; i < secondIndex.length; i++) {
-    const node = await secondIndex.get(i);
+  for (let i = 0; i < secondView.length; i++) {
+    const node = await secondView.get(i);
     console.log(JSON.parse(node.value.toString()));
   }
-  */
 }
 
 // (4) Sharing Indexes with Others
 console.log(chalk.green('\n(1) Sharing Indexes with Others\n'));
 {
-  /*
   // Create two chat users, each with their own Hypercores.
   const store = new Corestore(ram);
   const userA = store.get({ name: 'userA' });
@@ -192,31 +184,29 @@ console.log(chalk.green('\n(1) Sharing Indexes with Others\n'));
   await baseA.append('A1: likewise. fun exercise huh?');
   await baseB.append('B1: yep. great time.');
 
-  const indexCore = store.get({ name: 'index-core' });
-  const index = baseA.createRebasedIndex(indexCore);
-  await index.update();
+  const viewCore = store.get({ name: 'view-core' });
+  const view = baseA.linearize(viewCore);
+  await view.update();
 
   // Now we will simulate a "reader" who will use the index above as a remote index.
   // The reader will not be participating in the chat, but will be reading from the index.
   const baseC = new Autobase([userA, userB]);
-  const readerIndex = baseC.createRebasedIndex([indexCore], {
+  const readerView = baseC.linearize([viewCore], {
     autocommit: false, // Ignore this for now
   });
 
-  // This will piggy-back off of the work `indexCore` has already done.
-  await readerIndex.update();
+  // This will piggy-back off of the work `viewCore` has already done.
+  await readerView.update();
 
   // Since the remote index is fully up-to-date, the reader should not have to do any work.
   console.log(
     chalk.blue('Reader update status (should be zeros):'),
-    readerIndex.status,
+    readerView.status,
     '\n'
   );
 
-  // The block at index 0 is a header block, so we skip over that.
-  for (let i = 1; i < readerIndex.length; i++) {
-    const node = await readerIndex.get(i);
+  for (let i = 0; i < readerView.length; i++) {
+    const node = await readerView.get(i);
     console.log(node.value.toString());
   }
-  */
 }
