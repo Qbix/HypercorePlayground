@@ -28,13 +28,14 @@ for await (const node of baseA.createCausalStream()) {
   // console.log(node.clock);
 }
 
-const indexCore = store.get({ name: 'index-core' });
-const index = baseA.createRebasedIndex(indexCore);
+const viewCore = store.get({ name: 'view-core' });
+const view = baseA.linearize(viewCore);
 
-await index.update();
+await view.update();
 
+console.log('-------------');
 // The block at index 0 is a header block, so we skip over that.
-for (let i = 1; i < index.length; i++) {
-  const node = await index.get(i);
+for (let i = 1; i < view.length; i++) {
+  const node = await view.get(i);
   console.log(node.value.toString());
 }
