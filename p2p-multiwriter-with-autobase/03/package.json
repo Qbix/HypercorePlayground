@@ -1,7 +1,9 @@
 {
   "type": "module",
   "dependencies": {
+    "@garbados/pouchdb-hypercore": "^2.0.1",
     "corestore": "next",
-    "hyperswarm": "next"
+    "hyperswarm": "next",
+    "pouchdb": "^7.2.2"
   }
 }
