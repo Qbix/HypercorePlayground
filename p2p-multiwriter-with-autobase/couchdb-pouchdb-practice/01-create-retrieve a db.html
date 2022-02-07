@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Couchdb Pouchdb</title>
+    <script src="pouchdb@7.2.1/pouchdb.min.js"></script>
+
+</head>
+
+<body>
+
+    <pre id="display"></pre>
+    <p>
+        Couchdb Pouchdb demo
+    </p>
+
+    <script>
+        //retrieve a database (if db not exists then it will be created)
+        var db = new PouchDB('http://localhost:5984/kittens');
+
+        db.info().then(function (info) {
+        document.getElementById('display').innerHTML =
+            'We have a database: ' + JSON.stringify(info, null, 2);
+        });
+    </script>
+</body>
+
+</html>

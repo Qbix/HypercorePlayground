@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Couchdb Pouchdb working with documents</title>
+    <!-- <script src="//cdn.jsdelivr.net/npm/pouchdb@7.2.1/dist/pouchdb.min.js"></script> -->
+    <script src="pouchdb@7.2.1/pouchdb.min.js"></script>
+
+</head>
+
+<body>
+
+    <pre id="display"></pre>
+    <p>
+        Couchdb Pouchdb demo - working with documents
+    </p>
+
+    <script>
+        var db = new PouchDB('http://localhost:5984/kittens');
+
+        // Storing a document
+        // https://pouchdb.com/api.html#put
+        
+        var doc = {
+            "_id": "mittens",
+            "name": "Mittens",
+            "occupation": "kitten",
+            "age": 3,
+            "hobbies": [
+                "playing with balls of yarn",
+                "chasing laser pointers",
+                "lookin' hella cute"
+            ]
+        };
+        db.put(doc);
+
+        db.get('mittens').then(function (doc) {
+            console.log(doc);
+        });
+
+    </script>
+</body>
+
+</html>
