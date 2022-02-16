@@ -1,0 +1,3 @@
+[submodule "hyperdb-web-example"]
+	path = hyperdb-web-example
+	url = https://github.com/joehand/hyperdb-web-example.git
