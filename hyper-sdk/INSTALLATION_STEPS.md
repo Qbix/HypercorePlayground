@@ -11,6 +11,12 @@ git clone git@github.com:RangerMauve/hyperswarm-web.git
 cd hyperswarm-web
 npm install
 
+// build
+npm run build
+
+// test build
+npm run build-test
+
 // run
 node bin.js
 
