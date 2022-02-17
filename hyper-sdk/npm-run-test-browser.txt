@@ -1,0 +1,151 @@
+pavan@u-20:~/.../hyper-sdk$ npm run test-browser
+
+> hyper-sdk@3.0.10 test-browser /home/pavan/Documents/aux/qbix/hypercore/HypercorePlayground/hyper-sdk
+> node test/bin/test-browser.js
+
+# bundle = test-bundle.js
+# [build] building test bundle
+# [hyperswarm] Listening on ws://localhost:4977
+# [hyperswarm] → Proxy available on ws://localhost:4977/proxy
+# [hyperswarm] → Signal available on ws://localhost:4977/signal
+# [hyperspace] Using dht bootstrap server listening at localhost:44055
+# [hyperspace] Server listening on ws://localhost:9000
+# [hyperspace] Server listening on ws://localhost:9001
+# [build] complete
+# [tape] running tests
+TAP version 13
+# native: Hyperdrive - create drive
+# [test] cleaning up previous run
+# [test/native] init start
+# [test/native] init end
+ok 1 Able to write to hyperdrive
+# native: Hyperdrive - get existing drive
+ok 2 Got existing drive by reference
+# native: Hyperdrive - load drive over network
+ok 3 loaded correct drive
+ok 4 Got peer for drive
+ok 5 should be strictly equal
+# native: Hyperdrive - new drive created after close
+ok 6 Got new drive by reference
+# native: resolveName - resolve and load drive
+not ok 7 TypeError: Failed to fetch
+  ---
+    operator: error
+    stack: |-
+      TypeError: Failed to fetch
+  ...
+# native: Hypercore - create
+# native: Hypercore - load from network
+ok 8 loaded key correctly
+ok 9 got data from replicated core
+# native: Hypercore - only close when all handles are closed
+ok 10 Second handle is same instance
+ok 11 First core closed
+ok 12 Still able to read after close
+ok 13 close event emitted once
+ok 14 Second core closed
+# hyperspace: Hyperdrive - create drive
+# [test] cleaning up previous run
+# [test/native] cleanup start
+# [test/native] cleanup end
+# [test/hyperspace] init start
+# [hyperspace] client session opened
+# [hyperspace] client session opened
+# [test/hyperspace] init end
+ok 15 Able to write to hyperdrive
+# hyperspace: Hyperdrive - get existing drive
+ok 16 Got existing drive by reference
+# hyperspace: Hyperdrive - load drive over network
+ok 17 loaded correct drive
+ok 18 Got peer for drive
+ok 19 should be strictly equal
+# hyperspace: Hyperdrive - new drive created after close
+ok 20 Got new drive by reference
+# hyperspace: resolveName - resolve and load drive
+not ok 21 TypeError: Failed to fetch
+  ---
+    operator: error
+    stack: |-
+      TypeError: Failed to fetch
+  ...
+# hyperspace: Hypercore - create
+# hyperspace: Hypercore - load from network
+ok 22 loaded key correctly
+not ok 23 hyperspace: Hypercore - load from network timed out after 120000ms
+  ---
+    operator: fail
+    stack: |-
+      Error: hyperspace: Hypercore - load from network timed out after 120000ms
+          at Test.assert [as _assert] (http://localhost:36995/node_modules/tape/lib/test.js:314:54)
+          at Test.bound [as _assert] (http://localhost:36995/node_modules/tape/lib/test.js:99:32)
+          at Test.fail (http://localhost:36995/node_modules/tape/lib/test.js:408:10)
+          at Test.bound [as fail] (http://localhost:36995/node_modules/tape/lib/test.js:99:32)
+          at http://localhost:36995/node_modules/tape/lib/test.js:182:14
+  ...
+# hyperspace: Hypercore - only close when all handles are closed
+ok 24 Second handle is same instance
+ok 25 First core closed
+ok 26 Still able to read after close
+ok 27 close event emitted once
+ok 28 Second core closed
+# mixed: Hyperdrive - create drive
+# [test] cleaning up previous run
+# [test/hyperspace] cleanup start
+# [test/hyperspace] cleanup end
+# [test/mixed] init start
+# [hyperspace] client session opened
+# [test/mixed] init end
+ok 29 Able to write to hyperdrive
+# mixed: Hyperdrive - get existing drive
+ok 30 Got existing drive by reference
+# mixed: Hyperdrive - load drive over network
+ok 31 loaded correct drive
+ok 32 Got peer for drive
+ok 33 should be strictly equal
+# mixed: Hyperdrive - new drive created after close
+ok 34 Got new drive by reference
+# mixed: resolveName - resolve and load drive
+not ok 35 TypeError: Failed to fetch
+  ---
+    operator: error
+    stack: |-
+      TypeError: Failed to fetch
+  ...
+# mixed: Hypercore - create
+# mixed: Hypercore - load from network
+ok 36 loaded key correctly
+ok 37 got data from replicated core
+# mixed: Hypercore - only close when all handles are closed
+ok 38 Second handle is same instance
+ok 39 First core closed
+ok 40 Still able to read after close
+ok 41 close event emitted once
+ok 42 Second core closed
+
+1..42
+# tests 42
+# pass  38
+# fail  4
+
+# [test] cleaning up previous run
+# [test/mixed] cleanup start (cleans up native and hyperspace)
+# [test/hyperspace] cleanup start
+# [test/native] cleanup start
+# [test/native] cleanup end
+# [test/hyperspace] cleanup end
+# [test/mixed] cleanup end
+# [tape] exit-code: 1
+# [hyperspace] client session closed
+# [hyperspace] client session closed
+# [hyperspace] client session closed
+npm ERR! code ELIFECYCLE
+npm ERR! errno 1
+npm ERR! hyper-sdk@3.0.10 test-browser: `node test/bin/test-browser.js`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the hyper-sdk@3.0.10 test-browser script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /home/pavan/.npm/_logs/2022-02-17T13_17_33_684Z-debug.log
+pavan@u-20:~/.../hyper-sdk$
