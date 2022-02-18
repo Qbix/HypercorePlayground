@@ -12,11 +12,15 @@ import PouchdbHypercore from '@garbados/pouchdb-hypercore';
 PouchDB.plugin(PouchdbHypercore);
 
 async function main() {
+  console.log('main called');
   // setup
   const hypercore = new Hypercore('.example_hypercore');
+  console.log('hypercore', hypercore);
   const pouch = new PouchDB('.example_pouchdb');
   await pouch.fromHypercore(hypercore);
   const key = hypercore.key.toString('hex');
+  console.log('key', key);
+
   // hypercore -> pouchdb
   const seq = await new Promise((resolve, reject) => {
     this.hyper.append(JSON.stringify({ hello: 'world' }), (err, seq) => {
@@ -30,8 +34,8 @@ async function main() {
   await new Promise((resolve) => {
     setTimeout(resolve, 100);
   });
-  const doc = await this.pouch.get(`${key}@${seq}`);
-  console.log(doc) >>> { _id: '{key}@{seq}', _rev: '1-...', hello: 'world' };
+  //   const doc = await this.pouch.get(`${key}@${seq}`);
+  //   console.log(doc) >>> { _id: '{key}@{seq}', _rev: '1-...', hello: 'world' };
 }
 
 main();
